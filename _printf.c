@@ -1,88 +1,43 @@
 #include "main.h"
-#include <stdlib.h>
-
 /**
- * itoa - Converts an integer to a string
- * @val: Integer to convert
- * @base: Number base for conversion
+ * _printf - Print all this parameters
+ * @format: input
  *
- * Return: Pointer to the converted string
- */
-char *itoa(int val, int base)
-{
-    static char buf[32] = {0};
-    int i = 30;
-
-    for (; val && i; --i, val /= base)
-        buf[i] = "0123456789abcdef"[val % base];
-
-    return &buf[i + 1];
-}
-
-
-/**
- * _printf - Custom printf function to format and print data
- * @format: format string containing the directives
- * 
- * Return: Number of characters printed
+ * Description: function that prints output
+ *
+ * Return: The output character or num
  */
 int _printf(const char *format, ...)
 {
-    va_list args;
-    int count = 0;
-    char ch;
-    char *str;
-    int val;
+	int x = 0, o_p = 0;
+	char *ptr = (char *) format, *output_p;
+	int (*ptr_func)(va_list, char *, int);
+	va_list vlist;
 
-    va_start(args, format);
-
-    while (*format)
-      {
-        if (*format == '%')
-        {
-            format++;
-            switch (*format) 
-            {
-                case 'c':
-                    ch = (char)va_arg(args, int);
-                    putchar(ch);
-                    count++;
-                    break;
-                case 's':
-                    str = va_arg(args, char *);
-                    while (*str)
-                      {
-                        putchar(*str);
-                        str++;
-                        count++;
-                    }
-                    break;
-                case 'd':
-                case 'i':
-                    val = va_arg(args, int);
-                    str = itoa(val, 10);
-                    while (*str)
-                      {
-                        putchar(*str);
-                        str++;
-                        count++;
-                    }
-                    break;
-                case '%':
-                    putchar('%');
-                    count++;
-                    break;
-            }
-        } 
-        else
-        {
-            putchar(*format);
-            count++;
-        }
-        format++;
-    }
-
-    va_end(args);
-
-    return (count);
+	if (!format)
+		return (-1);
+	va_start(vlist, format);
+	output_p = malloc(sizeof(char) * SIZE);
+	if (!output_p)
+		return (1);
+	while (format[x])
+	{
+		if (format[x] != '%')
+			output_p[o_p] = format[x], o_p++;
+		else if (s_trlen(ptr) != 1)
+		{
+			ptr_func = format_type(++ptr);
+			if (!ptr_func)
+				output_p[o_p] = format[x], o_p++;
+			else
+				o_p = ptr_func(vlist, output_p, o_p), x++;
+		}
+		else
+			o_p = -1;
+		x++, ptr++;
+	}
+	va_end(vlist);
+	write(1, output_p, o_p);
+	free(output_p);
+	return (o_p);
 }
