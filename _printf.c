@@ -4,38 +4,32 @@
 int _printf(const char *format, ...)
 {
     va_list args;
-    va_start(args, format);
-
     int count = 0;
 
+    va_start(args, format);
+
     while (*format != '\0')
-        {
-        if (*format == '%') 
+    {
+        if (*format == '%')
         {
             format++;
             switch (*format)
-                {
-                case 'c':
-                    count += putchar(va_arg(args, int));
-                    break;
-                case 's': 
-                    {
-                    const char *str = va_arg(args, const char *);
-                    while (*str != '\0')
-                    {
-                        count += putchar(*str);
-                        str++;
-                    }
-                    break;
-                }
-                case '%':
-                    count += putchar('%');
-                    break;
-                default:
-                    count += putchar('%');
-                    count += putchar(*format);
+            {
+            case 'c':
+                count += putchar(va_arg(args, int));
+                break;
+            case 's':
+                count += printf("%s", va_arg(args, char *));
+                break;
+            case '%':
+                count += putchar('%');
+                break;
+            default:
+                count += putchar('%');
+                count += putchar(*format);
+                break;
             }
-        } 
+        }
         else
         {
             count += putchar(*format);
@@ -44,10 +38,13 @@ int _printf(const char *format, ...)
     }
 
     va_end(args);
+
     return count;
 }
 
-int main() {
-    _printf("Hello, %s! The character is %c and the percentage is %%.\n", "World", 'A');
+int main()
+{
+    _printf("Hello, %s! My favorite character is %c. This is a percent sign: %%.\n", "World", 'A');
+
     return 0;
 }
