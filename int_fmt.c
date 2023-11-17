@@ -1,63 +1,97 @@
-#include "main.h"
+#include <stdio.h>
+#include <stdarg.h>
 
-/**
-* int_fmt - adds the int value into the buffer
-* @buffer: holds the members for box, size and startls
-* @args: list of passed in variables
-* Return: returns the buffer struct
-*/
-mk_buffer int_fmt(mk_buffer buffer, va_list args)
+void print_binary(unsigned int num)
 {
-	int num;
-	int lnum;
-
-	num = va_arg(args, int);
-
-	if (num == -2147483648)
-	{
-		*buffer.box = '-';
-		buffer.box++;
-		buffer.size += 1;
-		*buffer.box = '2';
-		buffer.box++;
-		buffer.size += 1;
-		num = 147483648;
-		buffer = rec_digits(num, buffer);
-		buffer.box--;
-		return (buffer);
-	}
-
-	if (num < 0)
-	{
-		num = -num;
-		lnum = num;
-		buffer = add_buff(buffer, args, 0, '-');
-	}
-	else if (num == 0)
-	{
-		buffer = add_buff(buffer, args, 0, '0');
-	}
-	lnum = num;
-	buffer = rec_digits(lnum, buffer);
-
-	buffer.box--;
-	return (buffer);
+if (num > 1)
+{
+print_binary(num / 2);
+}
+putchar('0' + num % 2);
 }
 
-/**
-* rec_digits - actually adds the int value into the buffer
-* @buffer: holds the members for box, size and startls
-* @lnum: the number to be added
-* Return: returns the buffer struct
-*/
-mk_buffer rec_digits(int lnum, mk_buffer buffer)
+int _printf(const char *format, ...)
 {
-	if (lnum == 0)
-		return (buffer);
-	buffer = rec_digits(lnum / 10, buffer);
-	*buffer.box = lnum % 10 + '0';
-	buffer.box++;
-	buffer.size += 1;
+va_list args;
+int count = 0;
 
-	return (buffer);
+va_start(args, format);
+
+while (*format != '\0')
+{
+if (*format == '%')
+{
+format++;
+int flags = 0;
+
+
+while (*format == '+' || *format == ' ' || *format == '#')
+{
+if (*format == '+')
+{
+flags |= 1; '+'
+}
+else if (*format == ' ')
+{
+flags |= 2; 'space'
+}
+else if (*format == '#')
+{
+flags |= 4; '#'
+}
+format++;
+}
+
+switch (*format)
+{
+case 'c':
+count += putchar(va_arg(args, int));
+break;
+case 's':
+count += printf("%s", va_arg(args, char *));
+break;
+case 'p':
+count += printf("%p", va_arg(args, void *));
+break;
+case 'b':
+print_binary(va_arg(args, unsigned int));
+count += sizeof(unsigned int) * 8;
+break;
+case 'd':
+case 'i':
+count += printf("%+d", va_arg(args, int));
+break;
+case 'o':
+count += printf("%#o", va_arg(args, unsigned int));
+break;
+case 'x':
+case 'X':
+count += printf("%#x", va_arg(args, unsigned int));
+break;
+default:
+count += putchar('%');
+count += putchar(*format);
+break;
+}
+}
+else
+{
+count += putchar(*format);
+}
+format++;
+}
+
+va_end(args);
+
+return (count);
+}
+
+{
+unsigned int value = 42;
+_printf("The binary representation of %u is %b\n", value, value);
+_printf("Formatted number: %+d\n", -123);
+_printf("Octal number with '#' flag: %#o\n", 077);
+_printf("Hexadecimal number with '#' flag: %#x\n", 0xABCD);
+
+return (0);
 }
